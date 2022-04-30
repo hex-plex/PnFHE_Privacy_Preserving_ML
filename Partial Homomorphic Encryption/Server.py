@@ -11,7 +11,7 @@ ML model and send back the predicted results back to Client."""
 class Linear_Regressor:
 
     def train_and_get_weights(self):
-        df=pd.read_csv('Cars.csv')
+        df=pd.read_csv('./Data/Cars.csv')
         y=df['selling_price']
         X=df.drop('selling_price',axis=1)
         reg = LinearRegression().fit(X, y)
