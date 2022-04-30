@@ -1,31 +1,22 @@
-import phe as ph
 import json
 import os.path
-
+import phe as ph
 import pandas as pd
-import numpy as np
-import phe as paillier
-from sklearn import preprocessing
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
 
 """ Server will recieve encrypted data from the Client as
 Client_data.json for the prediction. Server will apply the 
 ML model and send back the predicted results back to Client."""    
 
 class Linear_Regressor:
-	# def __init__(self):
-	# 	pass
 
-	def train_and_get_weights(self):
-		df=pd.read_csv('car_details.csv')
-		y=df['selling_price']
-		X=df.drop('selling_price',axis=1)
-		print(X.columns)
-		reg = LinearRegression().fit(X, y)
-		return reg[0].coef_
-
+    def train_and_get_weights(self):
+        df=pd.read_csv('Cars.csv')
+        y=df['selling_price']
+        X=df.drop('selling_price',axis=1)
+        reg = LinearRegression().fit(X, y)
+        return reg.coef_
+        
 def getPredictions():
     ## Load the encrypted data from the file
     with open('Client_data.json', 'r') as file:
@@ -33,11 +24,11 @@ def getPredictions():
     data = json.loads(d)
 
     ##Load the weights of trained ML model
-    mycoef = Linear_Regressor().train_and_get_weights()
+    coeff = Linear_Regressor().train_and_get_weights()
     pk = data['public_key']
     public_key = ph.PaillierPublicKey(n=int(pk['n']))
     enc_nums_rec = [ph.EncryptedNumber(public_key, int(x[0], int(x[1]))) for x in data['values']]
-    results = sum([mycoef[i] * enc_nums_rec[i] for i in range(len(mycoef))])
+    results = sum([coeff[i] * enc_nums_rec[i] for i in range(len(coeff))])
     return results, public_key
 
 def main():
@@ -47,6 +38,7 @@ def main():
             datafile = serializeData(results, public_key)
             with open('prediction.json', 'w') as file:
                 json.dump(datafile, file)
+    print("Prediction file has been sent to the client.")
 
 """ Now serilaize data ie encrypt data with public key and send back to Client"""
 def serializeData(results, public_key):
@@ -61,7 +53,3 @@ if __name__ == '__main__':
     main()
 
 
-""" Verifying the result of Encryption Algorithm with original prediction."""
-data = [2012, 25000, 1, 1, 1, 0]
-mycoef = Linear_Regressor().train_and_get_weights()
-print(sum([data[i]*mycoef[i] for i in range(len(data))]))
