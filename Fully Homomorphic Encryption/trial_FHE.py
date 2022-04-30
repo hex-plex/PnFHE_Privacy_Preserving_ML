@@ -4,7 +4,7 @@ from bfv.bfv_encryptor import BFVEncryptor
 from bfv.bfv_evaluator import BFVEvaluator
 from bfv.bfv_key_generator import BFVKeyGenerator
 from bfv.bfv_parameters import BFVParameters
-
+import numpy as np
 import pickle
 from sklearn.decomposition import PCA
 from mlxtend.data import loadlocal_mnist
@@ -47,8 +47,8 @@ for img in X_d:
     ciph1 = encryptor.encrypt(plain1)
     class_dist = []
     for i in range(N_CLASSES):
-        plain2 = encoder.encode(message2)
-        ciph2 = encryptor.encrypt(lin_matrx[:, i])
+        plain2 = encoder.encode(lin_matrx[:, i])
+        ciph2 = encryptor.encrypt(plain2)
         ciph_prod = evaluator.multiply(ciph1, ciph2, relin_key)
         decrypted_prod = decryptor.decrypt(ciph_prod)
         decoded_prod = encoder.decode(decrypted_prod)
