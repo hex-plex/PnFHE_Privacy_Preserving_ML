@@ -16,7 +16,8 @@ class Linear_Regressor:
         X=df.drop('selling_price',axis=1)
         reg = LinearRegression().fit(X, y)
         return reg.coef_
-        
+
+##       
 def getPredictions():
     ## Load the encrypted data from the file
     with open('Client_data.json', 'r') as file:
@@ -35,18 +36,17 @@ def main():
     if os.path.exists('Client_data.json'):
         if not os.path.exists('prediction.json'):
             results, public_key = getPredictions()
-            datafile = serializeData(results, public_key)
-            with open('prediction.json', 'w') as file:
-                json.dump(datafile, file)
-    print("Prediction file has been sent to the client.")
 
-""" Now serilaize data ie encrypt data with public key and send back to Client"""
-def serializeData(results, public_key):
-    encrypted_data = {}
-    encrypted_data['pubkey'] = {'n': public_key.n}
-    encrypted_data['values'] = (str(results.ciphertext()), results.exponent)
-    serialized = json.dumps(encrypted_data)
-    return serialized
+            ## Serialize the result and send back to Client
+            encrypted_data = {}
+            encrypted_data['pubkey'] = {'n': public_key.n}
+            encrypted_data['values'] = (str(results.ciphertext()), results.exponent)
+            serialized = json.dumps(encrypted_data)
+            
+            with open('prediction.json', 'w') as file:
+                json.dump(serialized, file)
+    print("Prediction file has been sent to the client.")
+    
 
 
 if __name__ == '__main__':
