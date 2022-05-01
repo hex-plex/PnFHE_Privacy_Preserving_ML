@@ -23,7 +23,7 @@ f.close()
 lin_matrx = np.random.randn(ENC_SIZE, N_CLASSES)
 
 one_hot = OneHotEncoder(sparse=False)
-epochs = 1000
+epochs = 100
 alpha = 0.01
 for e in range(epochs):
     # print(X_d.shape, lin_matrx.shape)
@@ -32,7 +32,7 @@ for e in range(epochs):
     acc = (y_pred==y).sum()/len(y_pred)*100
     yh = one_hot.fit_transform(y.reshape(-1,1))
     yh_pred = one_hot.transform(y_pred.reshape(-1,1)) 
-    lin_matrx -= alpha*np.einsum("ij,kj->ij",lin_matrx, (yh_pred-yh))
+    lin_matrx -= alpha*np.einsum("ij,kj->ij",lin_matrx, (yh-yh_pred))
     print("Training Accuracy at epoch", e, "is", acc)
 
 np.savez_compressed("lin_matrix",weight=lin_matrx)
