@@ -1,7 +1,6 @@
 import phe as ph
 import json
-import os.path
-import cv2
+from os import path
 from Server import Linear_Regressor 
 
 def Generate_keys():
@@ -20,7 +19,7 @@ def Fetch_keys():
         return pub_key, priv_key
 
 ## Generate Keys if not present already
-if not os.path.exists('priv_pub_KeyPair.json'):
+if not path.exists('priv_pub_KeyPair.json'):
     Generate_keys()
 
 ## Fetch keys from file
@@ -37,12 +36,13 @@ def Data_serialization(data, public_key):
 
 ## Sample data point to be predicted
 data = [2012, 25000, 1, 1, 1, 0]
-datafile = Data_serialization(data, pub_key)
-with open('Client_data.json', 'w') as file:
-    json.dump(datafile, file)
+if not path.exists("Client_data.json"):
+    datafile = Data_serialization(data, pub_key)
+    with open('Client_data.json', 'w') as file:
+        json.dump(datafile, file)
 
-
-if not os.path.exists('prediction.json'):
+## Decrypting the data with private key
+if not path.exists('prediction.json'):
     print("The prediction file has not been recieved from the server.")
 else:
     pub_key, priv_key = Fetch_keys()
